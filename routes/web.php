@@ -17,10 +17,29 @@ use App\Http\Controllers\SettingController;
 
 
 Route::get('/', function () {
-    return Inertia::render('Home', [
-    
-    ]);
+    return Inertia::render('Home', []);
 });
+
+Route::get('/service', function () {
+    return Inertia::render('Service', []);
+});
+
+Route::get('/about', function () {
+    return Inertia::render('About', []);
+});
+Route::get('/gallery', function () {
+    return Inertia::render('Gallery', []);
+});
+Route::get('/destinations', function () {
+    return Inertia::render('Destinations', []);
+});
+Route::get('/chekout', function () {
+    return Inertia::render('Chekout', []);
+});
+Route::get('/cart', function () {
+    return Inertia::render('Cart', []);
+});
+
 Route::get('/dashboard', [AdminController::class, 'dashboard'])
     ->middleware(['auth', 'verified'])->name('dashboard');
 
