@@ -48,7 +48,7 @@ class BkashService
                 'Accept' => 'application/json',
                 'username' => $this->username,
                 'password' => $this->password,
-            ])->post("{$this->baseUrl}/checkout/token/grant", [
+            ])->post("{$this->baseUrl}/tokenized/checkout/token/grant", [
                 'app_key' => $this->appKey,
                 'app_secret' => $this->appSecret,
             ]);
@@ -79,7 +79,7 @@ class BkashService
             'Accept' => 'application/json',
             'Authorization' => $token,
             'X-App-Key' => $this->appKey,
-        ])->post("{$this->baseUrl}/checkout/create", [
+        ])->post("{$this->baseUrl}/tokenized/checkout/create", [
             'mode' => '0011',
             'payerReference' => $payerReference,
             'callbackURL' => $callbackUrl,
@@ -123,7 +123,7 @@ class BkashService
             'Accept' => 'application/json',
             'Authorization' => $token,
             'X-App-Key' => $this->appKey,
-        ])->post("{$this->baseUrl}/checkout/execute", [
+        ])->post("{$this->baseUrl}/tokenized/checkout/execute", [
             'paymentID' => $paymentId,
         ]);
 
@@ -152,7 +152,7 @@ class BkashService
             'Accept' => 'application/json',
             'Authorization' => $token,
             'X-App-Key' => $this->appKey,
-        ])->post("{$this->baseUrl}/checkout/payment/status", [
+        ])->post("{$this->baseUrl}/tokenized/checkout/payment/status", [
             'paymentID' => $paymentId,
         ]);
 

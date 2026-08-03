@@ -20,6 +20,9 @@ class Booking extends Model
         'total_amount',
         'status',
         'payment_method',
+        'payment_status',
+        'payment_reference',
+        'payment_transaction_id',
     ];
 
     protected $casts = [
@@ -75,6 +78,9 @@ class Booking extends Model
             'total_amount' => (float) $this->total_amount,
             'status' => $this->status,
             'payment_method' => $this->payment_method,
+            'payment_status' => $this->payment_status,
+            'payment_reference' => $this->payment_reference,
+            'payment_transaction_id' => $this->payment_transaction_id,
             'booked_at' => $this->created_at->format('d M Y, h:i A'),
             'booked_by_agent' => $this->agent?->name,
             'schedule' => $this->flightSchedule?->toCard(),

@@ -16,6 +16,7 @@ use App\Http\Controllers\FlightRouteController;
 use App\Http\Controllers\FlightScheduleController;
 use App\Http\Controllers\frontend\FrontendController;
 use App\Http\Controllers\frontend\ContactController;
+use App\Http\Controllers\frontend\PaymentController;
 use App\Http\Controllers\ContactMessageController;
 
 use App\Http\Controllers\SettingController;
@@ -51,6 +52,11 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/checkout', [FrontendController::class, 'checkout'])->name('checkout');
     Route::post('/checkout', [FrontendController::class, 'placeOrder'])->name('checkout.store');
+
+    // bKash redirects the customer's browser back here (GET) after they
+    // approve or cancel payment on bKash's hosted sandbox checkout page.
+    // This route was missing, which meant the bKash flow 404'd on return.
+    Route::get('/payments/bkash/callback', [PaymentController::class, 'bkashCallback'])->name('payments.bkash.callback');
 
     Route::get('/booking/{booking}/confirmation', [FrontendController::class, 'confirmation'])->name('booking.confirmation');
     Route::get('/booking/{booking}/ticket', [FrontendController::class, 'ticketPdf'])->name('booking.ticket');

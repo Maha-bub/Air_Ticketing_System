@@ -43,6 +43,17 @@ export default function Confirmation({ booking }) {
 
                         <p className="mb-1"><strong>Seats:</strong> {booking.seats.join(", ")}</p>
                         <p className="mb-1"><strong>Payment method:</strong> {booking.payment_method}</p>
+                        {booking.payment_status && (
+                            <p className="mb-1">
+                                <strong>Payment status:</strong>{" "}
+                                {booking.payment_status === "paid"
+                                    ? "Paid"
+                                    : booking.payment_status === "pay_at_counter"
+                                    ? "Pay at counter"
+                                    : booking.payment_status}
+                                {booking.payment_transaction_id && ` (Ref: ${booking.payment_transaction_id})`}
+                            </p>
+                        )}
                         <p className="mb-1">
                             <strong>Total paid:</strong> ৳{booking.total_amount.toLocaleString()}
                         </p>

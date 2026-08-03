@@ -3,6 +3,11 @@ import { Link } from "@inertiajs/react";
 import cloudShape from "../../../../public/frontend-assets/images/backgrounds/cloud-1.png";
 import planeShape from "../../../../public/frontend-assets/images/resources/main-slider-three-img-1.png";
 
+// The main 1894x441 banner background used on every inner page's hero
+// (About, Contact, Destinations, Flights, ...) — replaced with a free-license
+// Unsplash photo (hotlinked), cropped to the same wide-banner ratio.
+const pageHeaderBg = "https://images.unsplash.com/photo-1698584109676-f0d1515a9fe7?auto=format&fit=crop&w=1894&h=441&q=80"; // airplane wing above clouds — Wesley Tingey, Unsplash
+
 /**
  * Shared, animated hero/banner used at the top of every inner page
  * (About, Contact, Flights, Cart, Checkout, ...). Mirrors the homepage
@@ -17,7 +22,7 @@ export default function PageHeader({ title, crumb }) {
         <section className="page-header">
             <div
                 className="page-header-bg"
-                style={{ backgroundImage: "url(/frontend-assets/images/backgrounds/page-header-bg.jpg)" }}
+                style={{ backgroundImage: `url(${pageHeaderBg})` }}
             />
             <div className="page-header__shape-1 float-bob-x" aria-hidden="true">
                 <img src={cloudShape} alt="" />

@@ -4,12 +4,16 @@ import Header from "@/Components/Parts/Header";
 import PageHeader from "@/Components/Parts/PageHeader";
 import Footer from "@/Components/Parts/Footer";
 
-export default function Checkout({ item, passenger }) {
+export default function Checkout({ item, passenger, paymentSandbox }) {
     const { data, setData, post, processing, errors } = useForm({
         passenger_name: passenger?.name ?? "",
         passenger_email: passenger?.email ?? "",
         passenger_phone: "",
         payment_method: "cash_on_counter",
+        card_holder: "",
+        card_number: "",
+        card_expiry: "",
+        card_cvc: "",
     });
 
     function submit(e) {
@@ -143,6 +147,90 @@ export default function Checkout({ item, passenger }) {
                                                 </div>
                                             ))}
                                         </div>
+
+                                        {data.payment_method === "card" && (
+                                            <div className="checkout__card-form" style={{ marginTop: 20 }}>
+                                                {paymentSandbox?.card && (
+                                                    <p className="text-muted" style={{ fontSize: 13, marginBottom: 12 }}>
+                                                        Sandbox mode &mdash; use test card{" "}
+                                                        <strong>{paymentSandbox.card.success}</strong> (any future expiry, any CVC) to
+                                                        simulate a successful payment, or{" "}
+                                                        <strong>{paymentSandbox.card.decline}</strong> to simulate a decline.
+                                                    </p>
+                                                )}
+                                                <div className="row bs-gutter-x-20">
+                                                    <div className="col-xl-12">
+                                                        <div className="billing_input_box">
+                                                            <input
+                                                                type="text"
+                                                                placeholder="Cardholder name"
+                                                                value={data.card_holder}
+                                                                onChange={(e) => setData("card_holder", e.target.value)}
+                                                            />
+                                                            {errors.card_holder && (
+                                                                <small className="text-danger">{errors.card_holder}</small>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-xl-12">
+                                                        <div className="billing_input_box">
+                                                            <input
+                                                                type="text"
+                                                                placeholder="Card number (e.g. 4242 4242 4242 4242)"
+                                                                inputMode="numeric"
+                                                                maxLength={24}
+                                                                value={data.card_number}
+                                                                onChange={(e) => setData("card_number", e.target.value)}
+                                                            />
+                                                            {errors.card_number && (
+                                                                <small className="text-danger">{errors.card_number}</small>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-xl-6">
+                                                        <div className="billing_input_box">
+                                                            <input
+                                                                type="text"
+                                                                placeholder="MM/YY"
+                                                                maxLength={5}
+                                                                value={data.card_expiry}
+                                                                onChange={(e) => setData("card_expiry", e.target.value)}
+                                                            />
+                                                            {errors.card_expiry && (
+                                                                <small className="text-danger">{errors.card_expiry}</small>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                    <div className="col-xl-6">
+                                                        <div className="billing_input_box">
+                                                            <input
+                                                                type="text"
+                                                                placeholder="CVC"
+                                                                inputMode="numeric"
+                                                                maxLength={4}
+                                                                value={data.card_cvc}
+                                                                onChange={(e) => setData("card_cvc", e.target.value)}
+                                                            />
+                                                            {errors.card_cvc && (
+                                                                <small className="text-danger">{errors.card_cvc}</small>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        )}
+
+                                        {data.payment_method === "bkash" && paymentSandbox?.bkash && (
+                                            <p className="text-muted" style={{ fontSize: 13, marginTop: 20 }}>
+                                                {paymentSandbox.bkash.enabled
+                                                    ? "You'll be redirected to bKash's sandbox checkout page to approve this payment, then brought back here automatically."
+                                                    : "bKash sandbox isn't configured on the server yet, so this payment may not complete."}
+                                            </p>
+                                        )}
+
+                                        {errors.payment && (
+                                            <p className="text-danger" style={{ marginTop: 12 }}>{errors.payment}</p>
+                                        )}
 
                                         <div className="text-right d-flex justify-content-end">
                                             <button
