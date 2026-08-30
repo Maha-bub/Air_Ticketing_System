@@ -20,6 +20,30 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'role' => \App\Http\Middleware\Role::class,
         ]);
+
+        // Guests hitting the customer booking flow (select seats, cart,
+        // checkout, profile) are sent to Register first — most people
+        // reaching this wall don't have an account yet, and Register
+        // itself has an "Already have an account? Login" link for
+        // returning customers. Admin/agent areas still redirect to Login.
+        $middleware->redirectGuestsTo(function ($request) {
+            $customerBookingPaths = [
+                'flights/*/seats',
+                'cart',
+                'cart/*',
+                'checkout',
+                'checkout/*',
+                'booking/*',
+                'profile',
+                'profile/*',
+            ];
+
+            if ($request->is($customerBookingPaths)) {
+                return route('register');
+            }
+
+            return route('login');
+        });
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         //

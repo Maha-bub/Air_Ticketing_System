@@ -78,13 +78,13 @@ export default function Hero() {
                                             </h2>
                                             <div className="main-slider-three__btn-box">
                                                 <a
-                                                    href="contact.html"
+                                                    href="/flights"
                                                     className="thm-btn main-slider__btn"
                                                 >
                                                     Book Now
                                                 </a>
                                                 <a
-                                                    href="about.html"
+                                                    href="/about"
                                                     className="thm-btn main-slider__btn-two"
                                                 >
                                                     Read More

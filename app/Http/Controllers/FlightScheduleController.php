@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Airplane;
 use App\Models\FlightRoute;
 use App\Models\FlightSchedule;
 use Illuminate\Http\Request;
@@ -13,7 +14,7 @@ class FlightScheduleController extends Controller
      */
     public function index()
     {
-        $items = FlightSchedule::with(['route.airline', 'route.originAirport', 'route.destinationAirport'])
+        $items = FlightSchedule::with(['route.airline', 'route.originAirport', 'route.destinationAirport', 'airplane'])
             ->latest()
             ->get();
 
@@ -26,8 +27,9 @@ class FlightScheduleController extends Controller
     public function create()
     {
         $routes = FlightRoute::with(['airline', 'originAirport', 'destinationAirport'])->get();
+        $airplanes = Airplane::where('status', 'active')->get();
 
-        return view('admin.flight-schedules.create', compact('routes'));
+        return view('admin.flight-schedules.create', compact('routes', 'airplanes'));
     }
 
     /**
@@ -37,6 +39,7 @@ class FlightScheduleController extends Controller
     {
         $request->validate([
             'route_id' => 'required|exists:routes,id',
+            'airplane_id' => 'nullable|exists:airplanes,id',
             'flight_number' => 'required|string|max:20',
             'departure_time' => 'required|date_format:H:i',
             'arrival_time' => 'required|date_format:H:i',
@@ -47,6 +50,7 @@ class FlightScheduleController extends Controller
 
         FlightSchedule::create($request->only([
             'route_id',
+            'airplane_id',
             'flight_number',
             'departure_time',
             'arrival_time',
@@ -64,8 +68,9 @@ class FlightScheduleController extends Controller
     public function edit(FlightSchedule $flight_schedule)
     {
         $routes = FlightRoute::with(['airline', 'originAirport', 'destinationAirport'])->get();
+        $airplanes = Airplane::where('status', 'active')->get();
 
-        return view('admin.flight-schedules.edit', ['schedule' => $flight_schedule, 'routes' => $routes]);
+        return view('admin.flight-schedules.edit', ['schedule' => $flight_schedule, 'routes' => $routes, 'airplanes' => $airplanes]);
     }
 
     /**
@@ -75,6 +80,7 @@ class FlightScheduleController extends Controller
     {
         $request->validate([
             'route_id' => 'required|exists:routes,id',
+            'airplane_id' => 'nullable|exists:airplanes,id',
             'flight_number' => 'required|string|max:20',
             'departure_time' => 'required|date_format:H:i',
             'arrival_time' => 'required|date_format:H:i',
@@ -85,6 +91,7 @@ class FlightScheduleController extends Controller
 
         $flight_schedule->update($request->only([
             'route_id',
+            'airplane_id',
             'flight_number',
             'departure_time',
             'arrival_time',

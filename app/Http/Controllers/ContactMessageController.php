@@ -1,0 +1,31 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\ContactMessage;
+
+class ContactMessageController extends Controller
+{
+    public function index()
+    {
+        $items = ContactMessage::latest()->get();
+
+        return view('admin.contact-messages.index', ['items' => $items]);
+    }
+
+    public function show(ContactMessage $contactMessage)
+    {
+        if (!$contactMessage->is_read) {
+            $contactMessage->update(['is_read' => true]);
+        }
+
+        return view('admin.contact-messages.show', ['item' => $contactMessage]);
+    }
+
+    public function destroy(ContactMessage $contactMessage)
+    {
+        $contactMessage->delete();
+
+        return redirect()->route('admin.contact-messages.index')->with('success', 'Message deleted.');
+    }
+}

@@ -7,18 +7,21 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\AgentManageController;
+use App\Http\Controllers\AgentBookingController;
 use App\Http\Controllers\AirlineController;
+use App\Http\Controllers\AirplaneController;
 use App\Http\Controllers\AirportController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\FlightRouteController;
 use App\Http\Controllers\FlightScheduleController;
+use App\Http\Controllers\frontend\FrontendController;
+use App\Http\Controllers\frontend\ContactController;
+use App\Http\Controllers\ContactMessageController;
 
 use App\Http\Controllers\SettingController;
 
 
-Route::get('/', function () {
-    return Inertia::render('Home', []);
-});
+Route::get('/', [FrontendController::class, 'index'])->name('home');
 
 Route::get('/service', function () {
     return Inertia::render('Service', []);
@@ -30,18 +33,38 @@ Route::get('/about', function () {
 Route::get('/gallery', function () {
     return Inertia::render('Gallery', []);
 });
-Route::get('/destinations', function () {
-    return Inertia::render('Destinations', []);
-});
-Route::get('/chekout', function () {
-    return Inertia::render('Chekout', []);
-});
-Route::get('/cart', function () {
-    return Inertia::render('Cart', []);
+Route::get('/contact', [ContactController::class, 'show'])->name('contact');
+Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+
+// Public: browse destinations & search flights, no login needed to look.
+Route::get('/destinations', [FrontendController::class, 'destinations'])->name('destinations');
+Route::get('/flights', [FrontendController::class, 'searchFlights'])->name('flights.search');
+
+// Booking a specific flight (choosing seats) requires an account. Guests are
+// redirected to /login and Laravel sends them straight back here afterwards.
+Route::middleware('auth')->group(function () {
+    Route::get('/flights/{flightSchedule}/seats', [FrontendController::class, 'seatMap'])->name('flights.seatmap');
+    Route::post('/flights/{flightSchedule}/seats', [FrontendController::class, 'addToCart'])->name('flights.addToCart');
+
+    Route::get('/cart', [FrontendController::class, 'cart'])->name('cart');
+    Route::delete('/cart', [FrontendController::class, 'clearCart'])->name('cart.clear');
+
+    Route::get('/checkout', [FrontendController::class, 'checkout'])->name('checkout');
+    Route::post('/checkout', [FrontendController::class, 'placeOrder'])->name('checkout.store');
+
+    Route::get('/booking/{booking}/confirmation', [FrontendController::class, 'confirmation'])->name('booking.confirmation');
+    Route::get('/booking/{booking}/ticket', [FrontendController::class, 'ticketPdf'])->name('booking.ticket');
 });
 
-Route::get('/dashboard', [AdminController::class, 'dashboard'])
-    ->middleware(['auth', 'verified'])->name('dashboard');
+Route::get('/dashboard', function () {
+    $user = auth()->user();
+
+    return match ($user->role) {
+        'admin' => redirect()->route('admin.dashboard'),
+        'agent' => redirect()->route('agent.dashboard'),
+        default => redirect()->route('customer.dashboard'),
+    };
+})->middleware(['auth', 'verified'])->name('dashboard');
 
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
@@ -64,6 +87,7 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
 
     Route::resource('airports', AirportController::class)->except(['show']);
     Route::resource('airlines', AirlineController::class)->except(['show']);
+    Route::resource('airplanes', AirplaneController::class)->except(['show']);
     Route::resource('routes', FlightRouteController::class)->except(['show'])
         ->parameters(['routes' => 'route']);
     Route::resource('flight-schedules', FlightScheduleController::class)->except(['show']);
@@ -72,10 +96,15 @@ Route::prefix('admin')->name('admin.')->middleware(['auth', 'role:admin'])->grou
         ->parameters(['agents' => 'agentlist']);
 
     Route::resource('settings', SettingController::class)->except(['show']);
+
+    Route::get('contact-messages', [ContactMessageController::class, 'index'])->name('contact-messages.index');
+    Route::get('contact-messages/{contactMessage}', [ContactMessageController::class, 'show'])->name('contact-messages.show');
+    Route::delete('contact-messages/{contactMessage}', [ContactMessageController::class, 'destroy'])->name('contact-messages.destroy');
 });
 
 Route::middleware(['auth', 'role:customer'])->group(function () {
     Route::get('/customer/dashboard', [CustomerController::class, 'dashboard'])->name('customer.dashboard');
+    Route::get('/customer/bookings', [CustomerController::class, 'bookings'])->name('customer.bookings.index');
 });
 
 Route::middleware(['auth', 'role:agent'])->group(function () {
@@ -86,6 +115,14 @@ Route::middleware(['auth', 'role:agent'])->group(function () {
     Route::get('/agent/profile/edit', [AgentController::class, 'editProfile'])->name('agent.profile.edit');
     Route::put('/agent/profile', [AgentController::class, 'updateProfile'])->name('agent.profile.update');
     Route::put('/agent/password', [AgentController::class, 'updatePassword'])->name('agent.password.update');
+
+    // browse available flights & book on behalf of a customer
+    Route::get('/agent/services', [AgentBookingController::class, 'services'])->name('agent.services.index');
+    Route::get('/agent/services/{flightSchedule}/book', [AgentBookingController::class, 'create'])->name('agent.services.create');
+    Route::post('/agent/services/{flightSchedule}/book', [AgentBookingController::class, 'store'])->name('agent.services.store');
+
+    Route::get('/agent/bookings', [AgentBookingController::class, 'history'])->name('agent.bookings.index');
+    Route::get('/agent/bookings/{booking}', [AgentBookingController::class, 'show'])->name('agent.bookings.show');
 });
 
 require __DIR__ . '/auth.php';

@@ -35,4 +35,13 @@ return [
         ],
     ],
 
+    'bkash' => [
+        'base_url' => env('BKASH_BASE_URL', 'https://tokenized.sandbox.bka.sh/v1.2.0-beta'),
+        'app_key' => env('BKASH_APP_KEY', '4f6o0cjik2rsyldy'),
+        'app_secret' => env('BKASH_APP_SECRET', '2is7hdtk5nbt9if9'),
+        'username' => env('BKASH_USERNAME', 'sandboxTokenizedUser02'),
+        'password' => env('BKASH_PASSWORD', 'sandboxTokenizedUser02@12345'),
+        'callback_path' => env('BKASH_CALLBACK_PATH', '/payments/bkash/callback'),
+    ],
+
 ];

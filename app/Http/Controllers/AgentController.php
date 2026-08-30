@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\Rules\Password;
+use App\Models\Booking;
+use App\Models\FlightSchedule;
 
 class AgentController extends Controller
 {
@@ -15,7 +17,25 @@ class AgentController extends Controller
         $user = Auth::user();
         $agent = $user->agent;
 
-        return view('agent.dashboard', compact('user', 'agent'));
+        $availableFlights = FlightSchedule::where('status', 'scheduled')
+            ->whereHas('route', fn($q) => $q->where('status', 'active'))
+            ->count();
+
+        $myBookings = Booking::where('agent_id', $user->id);
+
+        $stats = [
+            'available_flights' => $availableFlights,
+            'total_bookings' => (clone $myBookings)->count(),
+            'bookings_today' => (clone $myBookings)->whereDate('created_at', today())->count(),
+            'total_sales' => (clone $myBookings)->where('status', '!=', 'cancelled')->sum('total_amount'),
+        ];
+
+        $recentBookings = (clone $myBookings)->with(['flightSchedule.route.originAirport', 'flightSchedule.route.destinationAirport', 'user'])
+            ->latest()
+            ->take(5)
+            ->get();
+
+        return view('agent.dashboard', compact('user', 'agent', 'stats', 'recentBookings'));
     }
 
     /**

@@ -49,6 +49,12 @@
                          </a>
                      </li><!--end nav-item-->
                      <li class="nav-item">
+                         <a class="nav-link" href="{{ route('admin.airplanes.index') }}">
+                             <i class="iconoir-airplane-helix menu-icon"></i>
+                             <span>Airplanes</span>
+                         </a>
+                     </li><!--end nav-item-->
+                     <li class="nav-item">
                          <a class="nav-link" href="{{ route('admin.flight-schedules.index') }}">
                              <i class="iconoir-calendar menu-icon"></i>
                              <span>Flight Schedules</span>
@@ -64,6 +70,12 @@
                          <a class="nav-link" href="{{ route('admin.settings.index') }}">
                              <i class="iconoir-settings menu-icon"></i>
                              <span>Settings</span>
+                         </a>
+                     </li><!--end nav-item-->
+                     <li class="nav-item">
+                         <a class="nav-link" href="{{ route('admin.contact-messages.index') }}">
+                             <i class="iconoir-mail menu-icon"></i>
+                             <span>Contact Messages</span>
                          </a>
                      </li><!--end nav-item-->
 

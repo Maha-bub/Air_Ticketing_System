@@ -59,6 +59,19 @@
                                 </div>
 
                                 <div class="mb-3 col-md-6">
+                                    <label class="form-label">Airplane</label>
+                                    <select name="airplane_id" class="form-select">
+                                        <option value="">-- Select Airplane --</option>
+                                        @foreach ($airplanes as $airplane)
+                                            <option value="{{ $airplane->id }}"
+                                                {{ old('airplane_id', $schedule->airplane_id) == $airplane->id ? 'selected' : '' }}>
+                                                {{ $airplane->name }} ({{ $airplane->total_seats }} seats)
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+
+                                <div class="mb-3 col-md-6">
                                     <label class="form-label">Flight Number</label>
                                     <input type="text" name="flight_number" class="form-control"
                                         value="{{ old('flight_number', $schedule->flight_number) }}" required>

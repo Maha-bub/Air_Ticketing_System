@@ -6,16 +6,16 @@ import React from "react";
 import Charter from "@/Components/Parts/Charter";
 import Destinations from "@/Components/Parts/Destinations";
 
-export default function Home() {
+export default function Home({ airports = [], destinations = [] }) {
     return (
         <>
-            <Header />
-            <Hero/>
-            <Booking/>
-            <Charter/>
-            <Destinations/>
+            <Header transparent />
+            <Hero />
+            <Booking airports={airports} />
+            <Charter />
+            <Destinations destinations={destinations} />
 
-            <Footer/>
+            <Footer />
         </>
     );
 }

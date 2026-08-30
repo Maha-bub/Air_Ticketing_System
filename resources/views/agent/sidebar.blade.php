@@ -2,7 +2,7 @@
  <div class="startbar d-print-none">
      <!--start brand-->
      <div class="brand">
-         <a href="index.html" class="logo">
+         <a href="{{ route('agent.dashboard') }}" class="logo">
              <span>
                  <img src="{{ asset('') }}assets/images/logo-sm.png" alt="logo-small" class="logo-sm">
              </span>
@@ -27,7 +27,18 @@
                          <a class="nav-link" href="{{ route('agent.dashboard') }}">
                              <i class="iconoir-report-columns menu-icon"></i>
                              <span>Dashboard</span>
-                             <span class="badge text-bg-info ms-auto">New</span>
+                         </a>
+                     </li><!--end nav-item-->
+                     <li class="nav-item">
+                         <a class="nav-link" href="{{ route('agent.services.index') }}">
+                             <i class="iconoir-search menu-icon"></i>
+                             <span>Available Services</span>
+                         </a>
+                     </li><!--end nav-item-->
+                     <li class="nav-item">
+                         <a class="nav-link" href="{{ route('agent.bookings.index') }}">
+                             <i class="iconoir-ticket menu-icon"></i>
+                             <span>My Bookings</span>
                          </a>
                      </li><!--end nav-item-->
                      <li class="nav-item">

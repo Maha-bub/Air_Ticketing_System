@@ -1,3 +1,208 @@
 /* @tailwind base;
 @tailwind components;
 @tailwind utilities; */
+
+/*
+ * The theme's .main-header-three is `position: absolute` with a transparent
+ * background — designed to float over the big hero banner image on the
+ * homepage. On every other page there's no hero image directly behind it,
+ * so the transparent header becomes unreadable. This modifier class (added
+ * by the Header component whenever `transparent` is not explicitly true)
+ * gives it the same solid white background the theme already uses for its
+ * scrolled/"sticky" state.
+ */
+.main-header-three--solid {
+    position: relative !important;
+    background-color: var(--jetly-white) !important;
+    background-image: none !important;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+}
+
+/*
+ * Floating decorative shapes for the shared inner-page PageHeader banner
+ * (About, Contact, Flights, Cart, Checkout, ...). Mirrors the homepage
+ * hero's floating-cloud/airplane look using the theme's own
+ * float-bob-x/float-bob-y keyframe animations (loaded from
+ * frontend-assets/vendors/animate/custom-animate.css).
+ */
+.page-header {
+    overflow: hidden;
+}
+
+.page-header__shape-1 {
+    position: absolute;
+    top: 15px;
+    left: 4%;
+    width: 110px;
+    opacity: 0.45;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.page-header__shape-2 {
+    position: absolute;
+    bottom: 0;
+    right: 4%;
+    width: 220px;
+    opacity: 0.9;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.page-header__shape-1 img,
+.page-header__shape-2 img {
+    width: 100%;
+    height: auto;
+}
+
+@media (max-width: 767px) {
+    .page-header__shape-1,
+    .page-header__shape-2 {
+        display: none;
+    }
+}
+
+/*
+ * .thm-btn is designed as a big pill-shaped call-to-action (padding: 15px
+ * 60px), which is much too wide once used inline inside a table row (e.g.
+ * the "Select Seats" / "Sold out" actions on the flight search results
+ * table). This compact variant keeps the same colors/shape but fits
+ * comfortably in a table cell, and adds a real disabled look (the base
+ * theme CSS never defined one).
+ */
+.thm-btn--sm {
+    padding: 8px 22px !important;
+    font-size: 12px !important;
+    border-radius: 20px !important;
+    white-space: nowrap;
+}
+
+button.thm-btn:disabled,
+button.thm-btn--sm:disabled {
+    background-color: var(--jetly-gray) !important;
+    color: #fff !important;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+button.thm-btn:disabled::before,
+button.thm-btn--sm:disabled::before {
+    display: none;
+}
+/*
+ * The homepage flight-search form used to rely on the nice-select2 plugin
+ * to skin its <select> elements. That added a layer of DOM-manipulation
+ * that regularly fought with React's own re-rendering. These rules give a
+ * plain, 100%-native <select>/<input type="date"> the exact same look the
+ * theme's own CSS gives its "get-flight__form-input-box input[type=text]"
+ * boxes, without needing any extra JS library.
+ */
+.get-flight__form-input-box select.native-select,
+.get-flight__form-input-box input[type="date"] {
+    height: 60px;
+    width: 100%;
+    background-color: #0d2b19;
+    border: none;
+    outline: none;
+    padding: 0 30px;
+    color: #889f91;
+    line-height: 60px;
+    font-weight: 400;
+    font-size: 14px;
+    border-radius: 0;
+    -webkit-appearance: none;
+    appearance: none;
+    cursor: pointer;
+}
+
+.get-flight__form-input-box input[type="date"] {
+    cursor: text;
+}
+
+.get-flight__form-input-box select.native-select option {
+    color: #123821;
+    background-color: #ffffff;
+}
+
+/* Let the browser show its native date-picker indicator so users have an
+   obvious affordance, but keep it easy to see against the dark box. */
+.get-flight__form-input-box input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+    opacity: 0.8;
+    cursor: pointer;
+}
+
+/*
+ * Dependency-free scroll-snap carousels (Charter section + "Popular charter
+ * destinations"). On desktop the prev/next arrows sit just outside the
+ * card track; on narrower screens there isn't room for that, so they move
+ * inside the track over the edge cards instead of getting clipped off the
+ * edge of the viewport.
+ */
+.thm-carousel-track {
+    scrollbar-width: thin;
+}
+
+.thm-carousel-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: none;
+    background: #a79132;
+    color: #fff;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    z-index: 2;
+}
+
+.thm-carousel-arrow--prev {
+    left: -18px;
+}
+
+.thm-carousel-arrow--next {
+    right: -18px;
+}
+
+@media (max-width: 991px) {
+    .thm-carousel-arrow {
+        width: 36px;
+        height: 36px;
+        font-size: 14px;
+    }
+
+    .thm-carousel-arrow--prev {
+        left: 6px;
+    }
+
+    .thm-carousel-arrow--next {
+        right: 6px;
+    }
+}
+
+/*
+ * The theme's own .destination-three__right has `margin-right: -375px` —
+ * a legacy trick from when the section used the theme's own owl-carousel
+ * (which positioned its nav buttons separately, far to the left of the
+ * whole section). With our own carousel, that negative margin pushed the
+ * "next" arrow ~375px past the right edge of the viewport while the "prev"
+ * arrow stayed put — exactly why only one arrow was ever visible. Reset it.
+ */
+.destination-three__right {
+    margin-right: 0 !important;
+}
+
+/* Subtle pressed/hover feedback so the slide transition feels responsive. */
+.thm-carousel-arrow:hover {
+    background: #123821;
+}
+
+.thm-carousel-arrow:active {
+    transform: translateY(-50%) scale(0.92);
+}

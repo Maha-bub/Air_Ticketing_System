@@ -44,10 +44,12 @@
                                         <th>Flight No.</th>
                                         <th>Airline</th>
                                         <th>Route</th>
+                                        <th>Airplane</th>
                                         <th>Departure</th>
                                         <th>Arrival</th>
                                         <th>Days</th>
                                         <th>Price</th>
+                                        <th>Seats Left</th>
                                         <th>Status</th>
                                         <th>Action</th>
                                     </tr>
@@ -62,10 +64,18 @@
                                                 {{ $item->route->originAirport->code ?? '—' }} &rarr;
                                                 {{ $item->route->destinationAirport->code ?? '—' }}
                                             </td>
+                                            <td>{{ $item->airplane->name ?? '—' }}</td>
                                             <td>{{ $item->departure_time }}</td>
                                             <td>{{ $item->arrival_time }}</td>
                                             <td>{{ $item->days_of_operation }}</td>
                                             <td>{{ number_format((float) $item->price, 2) }}</td>
+                                            <td>
+                                                @if ($item->airplane)
+                                                    {{ $item->availableSeatsCount() }} / {{ $item->airplane->total_seats }}
+                                                @else
+                                                    <span class="text-muted">—</span>
+                                                @endif
+                                            </td>
                                             <td>
                                                 <span
                                                     class="badge text-bg-{{ $item->status === 'scheduled' ? 'success' : ($item->status === 'delayed' ? 'warning' : 'danger') }}">
@@ -88,7 +98,7 @@
                                         </tr>
                                     @empty
                                         <tr>
-                                            <td colspan="10" class="text-center">No flight schedules found.</td>
+                                            <td colspan="12" class="text-center">No flight schedules found.</td>
                                         </tr>
                                     @endforelse
                                 </tbody>

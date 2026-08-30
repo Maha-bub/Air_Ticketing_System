@@ -1,70 +1,130 @@
-# Air Ticketing System (Backend)
+# Air Ticketing System
 
-This project was converted from the original **Laravel Donation Management System** into a
-backend-only **Air Ticketing System**, keeping the same Admin/Customer/Agent panel design
-and structure. The public-facing frontend has been removed.
+A full-stack flight booking platform built with **Laravel 12 + Inertia.js + React** for the
+public-facing site, and **Laravel Blade** for the Admin, Agent, and Customer dashboards.
 
-## What changed
+---
 
-- **Removed:** public frontend (`FrontendController`, frontend views/routes), bKash payment
-  integration, and all donation-domain features (Donations, Categories, Campaigns, Donor
-  List, Donor Donations, Reports).
-- **Renamed roles/panels** (same login system, same 3 roles, same layout/theme):
-  - `donor` → **`customer`** (`CustomerController`, `resources/views/customer/*`)
-  - `volunteer` → **`agent`** (`AgentController` / `AgentManageController`,
-    `resources/views/agent/*`, agents table)
-- **New Air Ticketing modules (Admin only), following the same CRUD/design pattern as the
-  old Category module:**
-  - Airports CRUD (`/admin/airports`)
-  - Airlines CRUD (`/admin/airlines`)
-  - Routes CRUD (`/admin/routes`) — links an airline to an origin/destination airport pair
-  - Flight Schedules CRUD (`/admin/flight-schedules`) — flight number, times, days,
-    price, and status for a route
-- **Admin dashboard** now shows air-ticketing stats (total airports, airlines, routes,
-  flight schedules, and a breakdown of scheduled/delayed/cancelled flights) instead of
-  donation stats.
-- **Sidebar** rebuilt: Dashboard, Airports, Airlines, Routes, Flight Schedules, Agents,
-  Settings.
-- Site branding/title updated to "Air Ticketing System"; the generic Settings module
-  (site name, logo, favicon, contact info) was kept as-is since it isn't donation-specific.
+## 1. Requirements
 
-## Project structure kept
+- PHP 8.2+
+- Composer
+- Node.js 18+ / npm
+- MySQL (or MariaDB)
 
-- Same Blade template/theme (`resources/views/admin/master.blade.php` and layout assets in
-  `public/assets`) — no visual redesign, only content/navigation changes.
-- Same 3-role architecture: `admin`, `customer`, `agent`, guarded by the existing
-  `role:` middleware.
-- Same CRUD coding conventions used throughout (`Route::resource`, form validation,
-  redirect + flash messages) so new modules match the existing codebase style.
+---
 
-## Setup
-
-This zip does **not** include `vendor/`, `node_modules/`, or `.git` to keep the download
-small. To run the project:
+## 2. First-time setup
 
 ```bash
 composer install
-npm install && npm run build   # or npm run dev
-cp .env.example .env           # if you don't already have a .env (one is already included)
-php artisan key:generate       # only if APP_KEY is empty in .env
-php artisan migrate --seed
+npm install
+
+copy .env.example .env      # if .env doesn't already exist — on Mac/Linux use: cp .env.example .env
+php artisan key:generate
+
+# Create the database itself first (e.g. via phpMyAdmin or the mysql CLI),
+# matching the name in .env → DB_DATABASE (default: air_ticketing_system)
+
+php artisan migrate
+php artisan db:seed
 php artisan storage:link
+
+npm run build
 php artisan serve
 ```
 
-### Seeded accounts (from `UserSeeder`)
+That's it — visit `http://127.0.0.1:8000`.
 
-| Role     | Email              | Password |
-|----------|--------------------|----------|
-| Admin    | admin@gmail.com    | 123456   |
-| Customer | customer@gmail.com | 123456   |
-| Agent    | agent@gmail.com    | 123456   |
+**If you're on Windows/XAMPP and get a "bootstrap/cache directory must be present and
+writable" or a missing `bootstrap/app.php` error:** your zip extraction likely dropped
+some files (this has happened with Windows' built-in extractor on this project before —
+use 7-Zip instead), or antivirus quarantined a `.php` file. Delete the project folder
+completely, re-extract with 7-Zip, and confirm `bootstrap/app.php` and
+`bootstrap/providers.php` exist before running `composer install`.
 
-## Notes
+---
 
-- The `routes` DB table (flight routes) is modeled by `App\Models\FlightRoute` instead of
-  `Route`, to avoid clashing with Laravel's `Illuminate\Support\Facades\Route`.
-- Deleting an Airport/Airline/Route that still has dependent Routes/Flight Schedules is
-  blocked with a friendly error instead of a foreign-key crash.
-- The Customer and Agent dashboards are intentionally simple (welcome screen / profile) —
-  add booking, ticketing, and payment features on top of this foundation as needed.
+## 3. Test accounts (from `UserSeeder`)
+
+| Role     | Email               | Password |
+|----------|----------------------|----------|
+| Admin    | admin@gmail.com      | 123456   |
+| Customer | customer@gmail.com   | 123456   |
+| Agent    | agent@gmail.com      | 123456   |
+
+New customer sign-ups via the public Register page work too (role defaults to `customer`).
+
+---
+
+## 4. What `php artisan db:seed` creates
+
+`DatabaseSeeder` runs `UserSeeder` + `DemoDataSeeder` automatically (no `--class` flag
+needed). This seeds:
+
+- 8 airports (Dhaka, Chattogram, Sylhet, Cox's Bazar, Delhi, Singapore, Dubai, Bangkok)
+- 3 airlines (Biman Bangladesh, US-Bangla, Novoair)
+- 3 airplanes (Boeing 787-8 Dreamliner, Boeing 737-800, ATR 72-600) — each with a real
+  aircraft photo copied from `public/frontend-assets/images/` into `storage/app/public/airplanes/`
+- 14 routes/flight schedules covering every seeded city **in both directions** (so
+  searching "from" any seeded city returns real results, not just from Dhaka)
+
+---
+
+## 5. Public site structure (Inertia + React, `resources/js/Pages`)
+
+| Route                              | Page              | Notes |
+|-------------------------------------|-------------------|-------|
+| `/`                                  | Home              | Live search widget + "Popular charter destinations" carousel |
+| `/flights`                           | Flights           | Search results — filters by city, and by time-of-day if the date is today |
+| `/flights/{schedule}/seats`          | SeatMap           | **Auth required.** Guests are sent to **Register** (not Login) — Register has an "Already have an account? Login" link for returning customers |
+| `/cart`, `/checkout`                 | Cart, Checkout    | Auth required |
+| `/booking/{id}/confirmation`         | Confirmation      | E-ticket + PDF download (DomPDF) |
+| `/about`, `/service`, `/gallery`, `/contact`, `/destinations` | — | Public, dynamic PageHeader banner |
+
+Guests trying to reach the booking flow (seat selection, cart, checkout, profile) are
+redirected to **Register**; Admin/Agent dashboards still redirect guests to **Login**
+(configured in `bootstrap/app.php` via `redirectGuestsTo`).
+
+---
+
+## 6. Dashboards (Blade, `resources/views/{admin,agent,customer}`)
+
+- **Admin** (`/admin/dashboard`) — manage Airports, Airlines, Routes, Flight Schedules,
+  Airplanes (with image upload), Agents, Settings, Contact Messages.
+- **Agent** (`/agent/dashboard`) — check available services (live seat availability) and
+  book a flight on a customer's behalf (looks up the customer by email, creates the
+  account automatically if it doesn't exist yet).
+- **Customer** (`/customer/dashboard`) — profile summary + recent bookings, with a
+  separate **Previous Trips** page for full booking history and ticket downloads.
+
+`/dashboard` (the generic post-login redirect target) routes each user to the correct
+one of the three above based on their `role`.
+
+---
+
+## 7. Known follow-ups (not yet built)
+
+- The Contact page's form now saves to the database and shows up in Admin → Contact
+  Messages, but there's no email notification sent to staff yet.
+- Password reset ("Forgot password?") still uses the default Inertia/React pages, not a
+  themed Blade page like Login/Register.
+- No automated tests have been added for the booking flow.
+
+---
+
+## 8. If something looks broken after I've said it's fixed
+
+Laravel caches compiled views/config/routes. After pulling any update to this project,
+always run:
+
+```bash
+php artisan view:clear
+php artisan cache:clear
+php artisan config:clear
+php artisan route:clear
+```
+
+Stale `storage/framework/views/*.php` compiled templates are the most common reason a
+fix doesn't seem to apply — clearing them forces Laravel to recompile from the current
+source files.

@@ -1,122 +1,110 @@
 <!DOCTYPE html>
-<html lang="en" dir="ltr" data-startbar="dark" data-bs-theme="light">
-
+<html lang="en">
 <head>
-
-
-    <meta charset="utf-8" />
-    <title>Register | Approx - Admin & Dashboard Template</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
-    <meta content="" name="author" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-
-    <!-- App favicon -->
-    <link rel="shortcut icon" href="assets/images/favicon.ico">
-
-
-    <!-- App css -->
-    <link href="assets/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
-    <link href="assets/css/icons.min.css" rel="stylesheet" type="text/css" />
-    <link href="assets/css/app.min.css" rel="stylesheet" type="text/css" />
-
+    <meta charset="utf-8">
+    <title>Register - Air Ticketing System</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style>
+        * { box-sizing: border-box; }
+        body {
+            margin: 0;
+            font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #f4f5f7;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+        }
+        .card {
+            width: 100%;
+            max-width: 460px;
+            background: #ffffff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+        }
+        .card__header {
+            background: #123821;
+            color: #fff;
+            text-align: center;
+            padding: 32px 24px;
+        }
+        .card__header h1 { margin: 0 0 6px; font-size: 24px; }
+        .card__header p { margin: 0; opacity: 0.8; font-size: 14px; }
+        .card__body { padding: 32px 28px; }
+        .alert {
+            background: #fdecea; color: #a3231f; border: 1px solid #f6c7c5;
+            border-radius: 6px; padding: 12px 14px; margin-bottom: 18px; font-size: 14px;
+        }
+        .alert ul { margin: 0; padding-left: 18px; }
+        label { display: block; font-weight: 600; font-size: 14px; color: #123821; margin-bottom: 6px; }
+        .field { margin-bottom: 18px; }
+        input[type="text"], input[type="email"], input[type="password"] {
+            width: 100%; padding: 12px 14px; font-size: 15px;
+            border: 1px solid #d7dbe0; border-radius: 6px; outline: none;
+        }
+        input:focus { border-color: #a79132; }
+        button[type="submit"] {
+            width: 100%; padding: 13px; background: #123821; color: #fff;
+            border: none; border-radius: 6px; font-size: 16px; font-weight: 600; cursor: pointer;
+            margin-top: 6px;
+        }
+        button[type="submit"]:hover { background: #1a5230; }
+        .footer-text { text-align: center; margin-top: 20px; font-size: 14px; color: #6b7280; }
+        .footer-text a { color: #a79132; font-weight: 600; text-decoration: none; }
+        .back-home { display: block; text-align: center; margin-top: 16px; font-size: 13px; color: #9aa0a6; text-decoration: none; }
+    </style>
 </head>
-
-
-<!-- Top Bar Start -->
-
 <body>
-    <div class="container-xxl">
-        <div class="row vh-100 d-flex justify-content-center">
-            <div class="col-12 align-self-center">
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-lg-4 mx-auto">
-                            <div class="card">
-                                <div class="card-body p-0 bg-black auth-header-box rounded-top">
-                                    <div class="text-center p-3">
-                                        <a href="index.html" class="logo logo-admin">
-                                            <img src="assets/images/logo-sm.png" height="50" alt="logo"
-                                                class="auth-logo">
-                                        </a>
-                                        <h4 class="mt-3 mb-1 fw-semibold text-white fs-18">Create an account</h4>
-                                        <p class="text-muted fw-medium mb-0">Enter your detail to Create your account
-                                            today.</p>
-                                    </div>
-                                </div>
-                                <div class="card-body pt-0">
-                                    <form class="my-4" action="{{ route('register') }}" method="post">
-                                        @csrf
+    <div class="card">
+        <div class="card__header">
+            <h1>Create Your Account</h1>
+            <p>Register to search, book, and manage your flights</p>
+        </div>
+        <div class="card__body">
+            @if ($errors->any())
+                <div class="alert">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+            @endif
 
-                                        @if ($errors->any())
-                                            <div class="alert alert-danger p-2 mb-3">
-                                                <ul class="mb-0 px-3">
-                                                    @foreach ($errors->all() as $error)
-                                                        <li>{{ $error }}</li>
-                                                    @endforeach
-                                                </ul>
-                                            </div>
-                                        @endif
+            <form method="POST" action="{{ route('register') }}">
+                @csrf
 
-                                        <div class="form-group mb-2">
-                                            <label class="form-label" for="username">Username</label>
-                                            <input type="text" class="form-control" id="username" name="name"
-                                                placeholder="Enter username">
-                                        </div><!--end form-group-->
+                <div class="field">
+                    <label for="name">Full Name</label>
+                    <input type="text" id="name" name="name" value="{{ old('name') }}" required autofocus>
+                </div>
 
-                                        <div class="form-group mb-2">
-                                            <label class="form-label" for="useremail">Email</label>
-                                            <input type="email" class="form-control" id="email" name="email"
-                                                placeholder="Enter email">
-                                        </div><!--end form-group-->
+                <div class="field">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" value="{{ old('email') }}" required>
+                </div>
 
-                                        <div class="form-group mb-2">
-                                            <label class="form-label" for="userpassword">Password</label>
-                                            <input type="password" class="form-control" name="password"
-                                                id="userpassword" placeholder="Enter password">
-                                        </div><!--end form-group-->
+                <div class="field">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
 
-                                        <div class="form-group mb-2">
-                                            <label class="form-label" for="Confirmpassword">ConfirmPassword</label>
-                                            <input type="password" class="form-control" name="password_confirmation"
-                                                id="Confirmpassword" placeholder="Enter Confirm password">
-                                        </div><!--end form-group-->
+                <div class="field">
+                    <label for="password_confirmation">Confirm Password</label>
+                    <input type="password" id="password_confirmation" name="password_confirmation" required>
+                </div>
 
+                <button type="submit">Register</button>
+            </form>
 
-                                        <div class="form-group row mt-3">
-                                            <div class="col-12">
-                                                <div class="form-check form-switch form-switch-success">
-                                                    <input class="form-check-input" type="checkbox"
-                                                        id="customSwitchSuccess">
-                                                    <label class="form-check-label" for="customSwitchSuccess">By
-                                                        registering you agree to the Approx <a href="#"
-                                                            class="text-primary">Terms of Use</a></label>
-                                                </div>
-                                            </div><!--end col-->
-                                        </div><!--end form-group-->
+            <p class="footer-text">
+                Already have an account? <a href="{{ route('login') }}">Log in here</a>
+            </p>
+        </div>
+    </div>
 
-                                        <div class="form-group mb-0 row">
-                                            <div class="col-12">
-                                                <div class="d-grid mt-3">
-                                                    <button class="btn btn-primary" type="submit">Register <i
-                                                            class="fas fa-sign-in-alt ms-1"></i></button>
-                                                </div>
-                                            </div><!--end col-->
-                                        </div> <!--end form-group-->
-                                    </form><!--end form-->
-                                    <div class="text-center">
-                                        <p class="text-muted">Already have an account ? <a href="{{ route('login') }}"
-                                                class="text-primary ms-2">Log in</a></p>
-                                    </div>
-                                </div><!--end card-body-->
-                            </div><!--end card-->
-                        </div><!--end col-->
-                    </div><!--end row-->
-                </div><!--end card-body-->
-            </div><!--end col-->
-        </div><!--end row-->
-    </div><!-- container -->
+    <a href="{{ url('/') }}" class="back-home">&larr; Back to homepage</a>
 </body>
-<!--end body-->
-
 </html>

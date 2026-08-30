@@ -30,6 +30,12 @@
                         </a>
                     </li><!--end nav-item-->
                     <li class="nav-item">
+                        <a class="nav-link" href="{{ route('customer.bookings.index') }}">
+                            <i class="iconoir-ticket menu-icon"></i>
+                            <span>Previous Trips</span>
+                        </a>
+                    </li><!--end nav-item-->
+                    <li class="nav-item">
                         <a class="nav-link" href="{{ route('profile.edit') }}">
                             <i class="iconoir-user menu-icon"></i>
                             <span>My Profile</span>
@@ -38,6 +44,20 @@
                 </ul>
             </div>
         </div><!--end startbar-collapse-->
+
+        <!-- Bottom Buttons -->
+        <div class="sidebar-bottom p-3">
+            <a href="{{ url('/') }}" class="btn btn-primary w-100 mb-2">
+                <i class="fas fa-globe me-2"></i> Book a Flight
+            </a>
+
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="btn btn-danger w-100">
+                    <i class="fas fa-sign-out-alt me-2"></i> Logout
+                </button>
+            </form>
+        </div>
     </div><!--end startbar-menu-->
 </div><!--end startbar-->
 <div class="startbar-overlay d-print-none"></div>
